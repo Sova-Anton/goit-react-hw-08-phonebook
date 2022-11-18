@@ -1,26 +1,32 @@
 import React from 'react';
-import { LabelFilter, InputFilter } from './Filter.styled';
-import { useSelector, useDispatch } from 'react-redux';
+import ContentPasteSearchSharpIcon from '@mui/icons-material/ContentPasteSearchSharp';
+import { Box, Typography, OutlinedInput, InputAdornment } from '@mui/material';
+
+import { useDispatch } from 'react-redux';
 import { setFilter } from 'redux/filterSlice';
-import { selectFilter } from 'redux/selectors';
 
 export default function Filter() {
-  const filter = useSelector(selectFilter);
   const dispatch = useDispatch();
-
   const changeFilter = e => {
     dispatch(setFilter(e.currentTarget.value));
   };
 
   return (
-    <LabelFilter>
-      Find contacts by name
-      <InputFilter
-        type="text"
+    <Box mb={3} mt={2} textAlign='center'>
+      <Typography variant="subtitle1" mb={1}> Find contacts by name</Typography>
+      <OutlinedInput
+        
         name="filter"
-        value={filter}
+        id="outlined-adornment-password"
+        type="text"
         onChange={changeFilter}
+        size="small"
+        endAdornment={
+          <InputAdornment position="end">
+            <ContentPasteSearchSharpIcon />
+          </InputAdornment>
+        }
       />
-    </LabelFilter>
+    </Box>
   );
 }

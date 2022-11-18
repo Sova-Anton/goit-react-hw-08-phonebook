@@ -1,25 +1,27 @@
-import { useState } from 'react';
-import { nanoid } from 'nanoid';
-import { useDispatch, useSelector } from 'react-redux';
-import Box from '../Box';
-import { selectContacts } from 'redux/selectors';
 import {
-  FormSection,
-  LabelForm,
-  Input,
-  ButtonForm,
-} from './ContactForm.styled';
-import { addContact } from 'redux/operations';
+  Container,
+  Typography,
+  Box,
+  TextField,
+  CssBaseline,
+  Button,
+} from '@mui/material';
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectContacts } from 'redux/contacts/selectors';
+
+import { addContact } from 'redux/contacts/operations';
 
 export default function ContactForm() {
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [number, setNumber] = useState('');
 
   const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
-
-  const nameId = nanoid();
-  const numberId = nanoid();
 
   const handleChange = event => {
     const { name, value } = event.target;
@@ -28,7 +30,7 @@ export default function ContactForm() {
         setName(value);
         break;
       case 'number':
-        setPhone(value);
+        setNumber(value);
         break;
       default:
         return;
@@ -42,54 +44,73 @@ export default function ContactForm() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (isDuplicate({ name })) {
-      return alert(`${name} is already in contacts.`);
+    const form = e.currentTarget;
+    if (!name.trim() || !number.trim()) {
+      return;
     }
-    dispatch(addContact({ name, phone }));
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setName('');
-    setPhone('');
+    if (isDuplicate({ name })) {
+      return toast.error(`${name} is already in contacts.`);
+    }
+    dispatch(addContact({ name, number }));
+    form.reset();
   };
 
   return (
-    <Box
-      maxWidth="500px"
-      ml="auto"
-      mr="auto"
-      border="1px solid"
-      borderRadius="10px"
-      borderColor="#7979f2"
-    >
-      <FormSection onSubmit={handleSubmit}>
-        <LabelForm htmlFor="{nameId}">Name</LabelForm>
-        <Input
-          id={nameId}
-          type="text"
-          name="name"
-          value={name}
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          required
-          onChange={handleChange}
-        />
+    <>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box
+          sx={{
+            paddingTop: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography component="h1" variant="h4">
+            Create contact
+          </Typography>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label="Name"
+              name="name"
+              type="text"
+              autoFocus
+              onChange={handleChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="number"
+              label="Number"
+              type="number"
+              id="number"
+              onChange={handleChange}
+            />
 
-        <LabelForm htmlFor="{numberId}">Number</LabelForm>
-        <Input
-          id={numberId}
-          type="tel"
-          name="number"
-          value={phone}
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-          onChange={handleChange}
-        />
-
-        <ButtonForm type="submit">Add contact</ButtonForm>
-      </FormSection>
-    </Box>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="success"
+              sx={{ mt: 3 }}
+            >
+              Add contact
+            </Button>
+          </Box>
+        </Box>
+        <ToastContainer autoClose={4000} />
+      </Container>
+    </>
   );
 }

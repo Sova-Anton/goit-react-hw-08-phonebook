@@ -1,4 +1,6 @@
-export const theme = {
+import { createTheme } from '@mui/material/styles';
+
+export const theme = createTheme({
   colors: {
     text: '#000',
     background: '#fff',
@@ -33,4 +35,4 @@ export const theme = {
     middle: '20px',
     round: '50%',
   },
-};
+});
